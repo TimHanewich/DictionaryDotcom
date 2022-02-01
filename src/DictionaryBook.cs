@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Dictionary
 {
-    public class Dictionary
+    public class DictionaryBook
     {
         private List<Definition> _Definitions;
 
@@ -22,7 +22,7 @@ namespace Dictionary
             }
         }
 
-        public Dictionary()
+        public DictionaryBook()
         {
             _Definitions = new List<Definition>();
         }

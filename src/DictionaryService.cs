@@ -9,8 +9,36 @@ namespace Dictionary
 {
     public class DictionaryService
     {
+
+        private DictionaryBook Storage; //If Storage is NOT set by the user, definitions will be pulled from dictionary.com each time on demand and NOT stored.
+
+        public void SetStorage(DictionaryBook dict)
+        {
+            Storage = dict;
+        }
+
+
         public async Task<Definition[]> DefineAsync(string word)
         {
+
+            //First, check if there are any that exist in the book. If any exist, return them!
+            if (Storage != null)
+            {
+                List<Definition> ToReturnFromStorage = new List<Definition>();
+                foreach (Definition d in Storage.Definitions)
+                {
+                    if (d.Word.ToLower().Trim() == word.ToLower().Trim())
+                    {
+                        ToReturnFromStorage.Add(d);
+                    }
+                }
+                if (ToReturnFromStorage.Count > 0)
+                {
+                    return ToReturnFromStorage.ToArray();
+                }
+            }
+
+            //None existed in the storage, or storage was not set. So call on-demand.
             //Call the service
             HttpClient hc = new HttpClient();
             HttpResponseMessage resp = await hc.GetAsync("https://www.dictionary.com/browse/" + word);
@@ -111,6 +139,17 @@ namespace Dictionary
                         {
                             wp.Example = ThisPart.Substring(loc1 + 1, loc2 - loc1 - 1);
                         }
+                    }
+                }
+
+                
+
+                //Before returning, save these definitions to the storage if there is storage
+                if (Storage != null)
+                {
+                    foreach (Definition d in ToReturn)
+                    {
+                        Storage.AddDefinition(d); //We do not need to worry about double-adding. That is because if this same definition for this word DID already exist in the dictionary, it would have been returned at the top before even calling the dictionary service. It never even would have gotten here!
                     }
                 }
 
