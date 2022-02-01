@@ -1,6 +1,6 @@
 using System;
 
-namespace DictionaryDotcom
+namespace Dictionary
 {
     public enum WordClass
     {
