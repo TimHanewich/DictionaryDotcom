@@ -6,70 +6,44 @@ namespace Dictionary
     public class DictionaryBook
     {
         private List<DefinitionSet> _DefinitionSets;
-        private List<string> LookedUpWordsThatReturnedNoDefinitions; //A list of words that we looked up, but Definitions.com did not have any definitions for
 
-        public Definition[] Definitions
+        public DefinitionSet[] DefinitionSets
         {
             get
             {
-                if (_Definitions == null)
+                if (_DefinitionSets == null)
                 {
-                    return new Definition[]{};
+                    return new DefinitionSet[]{};
                 }
                 else
                 {
-                    return _Definitions.ToArray();
+                    return _DefinitionSets.ToArray();
                 }
             }
         }
 
         public DictionaryBook()
         {
-            _Definitions = new List<Definition>();
-            LookedUpWordsThatReturnedNoDefinitions = new List<string>();
+            _DefinitionSets = new List<DefinitionSet>();
         }
 
-        public void AddDefinition(Definition d)
+        public void AddDefinitionSet(DefinitionSet d)
         {
-            _Definitions.Add(d);
+            _DefinitionSets.Add(d);
         }
 
 
         //Looks up definition. If this is on the LookedUpWordsThatReturnedNoDefinitions list, we will return a list of 0 Definitions (none available). If we have have never encountered this word before (it is not in the no definitions list and we do not have a record for it, we will return null). If we have records, return them.
-        public Definition[] Lookup(string word)
+        public DefinitionSet Lookup(string word)
         {
-            //First, check if this word is on the lookup words that returned no definitions list
-            foreach (string nrword in LookedUpWordsThatReturnedNoDefinitions)
+            foreach (DefinitionSet ds in DefinitionSets)
             {
-                if (nrword.Trim().ToLower() == word.Trim().ToLower())
+                if (ds.Word.ToLower().Trim() == word.ToLower().Trim())
                 {
-                    return new Definition[]{}; //Return no results
+                    return ds;
                 }
-            }
-
-
-            //Collect the definitions for this word
-            List<Definition> ToReturn = new List<Definition>();
-            foreach (Definition def in Definitions)
-            {
-                if (def.Word.Trim().ToLower() == word.Trim().ToLower())
-                {
-                    ToReturn.Add(def);
-                }
-            }
-
-
-            //If we have results, return the results. If not, return NULL.
-            if (ToReturn.Count > 0)
-            {
-                return ToReturn.ToArray();
-            }
-            else
-            {
-                return null; //A null result means we we have not confirmed with Dictionary.com that no definitions for this exist yet. Yet we do not have any definitions in our list of definitions. Therefore, this means we do not have any familiarity with this word. We cannot return definitions and we cannot guanrentee there are no valid definitions for this word. So return null.
-            }
-
-            
+            }            
+            return null;
         }
 
     }

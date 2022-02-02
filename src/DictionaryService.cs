@@ -24,21 +24,12 @@ namespace Dictionary
             //First, check if there are any that exist in the book. If any exist, return them!
             if (Storage != null)
             {
-                List<Definition> ToReturnFromStorage = new List<Definition>();
-                foreach (Definition d in Storage.Definitions)
+                DefinitionSet DsOnFile = Storage.Lookup(word);
+                if (DsOnFile != null)
                 {
-                    if (d.Word.ToLower().Trim() == word.ToLower().Trim())
-                    {
-                        ToReturnFromStorage.Add(d);
-                    }
-                }
-                if (ToReturnFromStorage.Count > 0)
-                {
-                    return ToReturnFromStorage.ToArray();
+                    return DsOnFile;
                 }
             }
-
-            Console.WriteLine("CALLING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
             //None existed in the storage, or storage was not set. So call on-demand.
             //Call the service
@@ -53,17 +44,18 @@ namespace Dictionary
             string DefinitionsSection = content.Substring(loc1 + 1, loc2 - loc1 - 1);
 
 
+            //Create a DefinitionSet for this word
+            DefinitionSet DsForThisWord = new DefinitionSet();
+            DsForThisWord.Word = word.Trim().ToLower();
+
 
             //Split into parts to get definitions
-            List<Definition> ToReturn = new List<Definition>();
+            List<Definition> FoundDefinitions = new List<Definition>();
             string[] parts = DefinitionsSection.Split(new string[]{"css-109x55k e1hk9ate4"}, StringSplitOptions.None);
             for (int t = 1; t < parts.Length; t++)
             {
                 Definition wp = new Definition();
                 string ThisPart = parts[t];
-
-                //Add the word
-                wp.Word = word.ToLower().Trim();
 
                 //Get the word class
                 loc1 = ThisPart.IndexOf("luna-pos");
@@ -143,24 +135,19 @@ namespace Dictionary
                         }
                     }
                 }
-
                 
-
-                //Before returning, save these definitions to the storage if there is storage
-                if (Storage != null)
-                {
-                    foreach (Definition d in ToReturn)
-                    {
-                        Storage.AddDefinition(d); //We do not need to worry about double-adding. That is because if this same definition for this word DID already exist in the dictionary, it would have been returned at the top before even calling the dictionary service. It never even would have gotten here!
-                    }
-                }
-
-                
-
-                ToReturn.Add(wp);
+                FoundDefinitions.Add(wp);
             }
 
-            return ToReturn.ToArray();
+            //Add it to the storage
+            //We do not need to worry about double-adding. That is because if this same definition for this word DID already exist in the dictionary, it would have been returned at the top before even calling the dictionary service. It never even would have gotten here!
+            if (Storage != null)
+            {
+                Storage.AddDefinitionSet(DsForThisWord);
+            }
+
+
+            return DsForThisWord;
         }
     }
 }
