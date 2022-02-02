@@ -113,10 +113,12 @@ namespace Dictionary
                     loc1 = ThisPart.IndexOf(">", loc1 + 1);
                     if (loc1 > -1)
                     {
-                        loc2 = ThisPart.IndexOf("<", loc1 + 1);
+                        loc2 = ThisPart.IndexOf("</span", loc1 + 1);
                         if (loc2 > -1 && loc2 > loc1)
                         {
-                            wp.Description = ThisPart.Substring(loc1 + 1, loc2 - loc1 - 1);
+                            string desc = ThisPart.Substring(loc1 + 1, loc2 - loc1 - 1);
+                            desc = RemoveHtmlTags(desc);
+                            wp.Description = desc;
                         }
                     }
                 }
@@ -152,5 +154,35 @@ namespace Dictionary
 
             return DsForThisWord;
         }
+    
+    
+        private string RemoveHtmlTags(string src)
+        {
+            string ToReturn = "";
+            bool InTag = false;
+            foreach (char c in src)
+            {
+                if (InTag == false)
+                {
+                    if (c == '<')
+                    {
+                        InTag = true;
+                    }
+                    else
+                    {
+                        ToReturn = ToReturn + c.ToString();
+                    }
+                }
+                else
+                {
+                    if (c == '>')
+                    {
+                        InTag = false;
+                    }
+                }
+            }
+            return ToReturn;
+        }
+    
     }
 }
