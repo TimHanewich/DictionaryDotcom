@@ -139,6 +139,9 @@ namespace Dictionary
                 FoundDefinitions.Add(wp);
             }
 
+            //Set the definitions
+            DsForThisWord.Definitions = FoundDefinitions.ToArray();
+
             //Add it to the storage
             //We do not need to worry about double-adding. That is because if this same definition for this word DID already exist in the dictionary, it would have been returned at the top before even calling the dictionary service. It never even would have gotten here!
             if (Storage != null)
