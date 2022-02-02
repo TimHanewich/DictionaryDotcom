@@ -18,7 +18,7 @@ namespace Dictionary
         }
 
 
-        public async Task<Definition[]> DefineAsync(string word)
+        public async Task<DefinitionSet> DefineAsync(string word)
         {
 
             //First, check if there are any that exist in the book. If any exist, return them!
@@ -37,6 +37,8 @@ namespace Dictionary
                     return ToReturnFromStorage.ToArray();
                 }
             }
+
+            Console.WriteLine("CALLING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
             //None existed in the storage, or storage was not set. So call on-demand.
             //Call the service
